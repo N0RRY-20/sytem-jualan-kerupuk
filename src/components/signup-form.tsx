@@ -1,37 +1,37 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
-import { cn } from "@/lib/utils"
-import { authClient } from "@/lib/auth-client"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { authClient } from "@/lib/auth-client";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
   FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { Spinner } from "@/components/ui/spinner"
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 
 const signupSchema = z
   .object({
@@ -49,17 +49,17 @@ const signupSchema = z
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords do not match.",
     path: ["confirmPassword"],
-  })
+  });
 
-type SignupFormValues = z.infer<typeof signupSchema>
+type SignupFormValues = z.infer<typeof signupSchema>;
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const router = useRouter()
-  const [error, setError] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
@@ -69,26 +69,26 @@ export function SignupForm({
       password: "",
       confirmPassword: "",
     },
-  })
+  });
 
   async function onSubmit(values: SignupFormValues) {
-    setError(null)
-    setIsLoading(true)
+    setError(null);
+    setIsLoading(true);
 
     const { error } = await authClient.signUp.email({
       email: values.email,
       password: values.password,
       name: values.name,
-    })
+    });
 
-    setIsLoading(false)
+    setIsLoading(false);
 
     if (error) {
-      setError(error.message || "Something went wrong. Please try again.")
-      return
+      setError(error.message || "Something went wrong. Please try again.");
+      return;
     }
 
-    router.push("/")
+    router.push("/");
   }
 
   return (
@@ -200,17 +200,16 @@ export function SignupForm({
                   </FieldDescription>
                 </Field>
                 <Field>
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={isLoading}
-                  >
+                  <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading && <Spinner />}
                     {isLoading ? "Creating account..." : "Create Account"}
                   </Button>
                   <FieldDescription className="text-center">
                     Already have an account?{" "}
-                    <Link href="/login" className="text-primary hover:underline">
+                    <Link
+                      href="/login"
+                      className="text-primary hover:underline"
+                    >
                       Sign in
                     </Link>
                   </FieldDescription>
@@ -221,16 +220,8 @@ export function SignupForm({
         </CardContent>
       </Card>
       <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our{" "}
-        <Link href="/terms" className="text-primary hover:underline">
-          Terms of Service
-        </Link>{" "}
-        and{" "}
-        <Link href="/privacy" className="text-primary hover:underline">
-          Privacy Policy
-        </Link>
-        .
+        Dengan melanjutkan, Anda menyetujui ketentuan penggunaan aplikasi SiJuK.
       </FieldDescription>
     </div>
-  )
+  );
 }
