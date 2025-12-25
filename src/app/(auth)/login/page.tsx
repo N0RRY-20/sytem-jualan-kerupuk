@@ -1,8 +1,20 @@
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { GalleryVerticalEnd } from "lucide-react";
 
+import { auth } from "@/lib/auth";
 import { LoginForm } from "@/components/login-form";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  // Cek jika sudah login, redirect ke dashboard
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (session) {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
@@ -10,7 +22,7 @@ export default function LoginPage() {
           <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
             <GalleryVerticalEnd className="size-4" />
           </div>
-          Acme Inc.
+          SiJuK
         </a>
         <LoginForm />
       </div>
