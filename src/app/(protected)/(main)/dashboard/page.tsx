@@ -1,8 +1,20 @@
 import Link from "next/link";
-import { getDashboardSummary, getRecentTransactions } from "@/actions/dashboard";
+import {
+  getDashboardSummary,
+  getRecentTransactions,
+} from "@/actions/dashboard";
+import { hasCompletedOnboarding } from "@/actions/auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ChefHat, Store, TrendingUp, TrendingDown, Package, AlertCircle } from "lucide-react";
+import {
+  ChefHat,
+  Store,
+  TrendingUp,
+  TrendingDown,
+  Package,
+  AlertCircle,
+  Rocket,
+} from "lucide-react";
 
 function formatRupiah(amount: number): string {
   return new Intl.NumberFormat("id-ID", {
@@ -14,11 +26,36 @@ function formatRupiah(amount: number): string {
 }
 
 export default async function DashboardPage() {
+  // Cek apakah user sudah menyelesaikan onboarding
+  const isOnboarded = await hasCompletedOnboarding();
+
   const summary = await getDashboardSummary();
   const recentTx = await getRecentTransactions(5);
 
   return (
     <div className="space-y-6">
+      {/* Banner Onboarding jika belum setup */}
+      {!isOnboarded && (
+        <Card className="border-primary/50 bg-primary/5">
+          <CardContent className="flex items-center justify-between py-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                <Rocket className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="font-medium">Selamat datang di SiJuK!</p>
+                <p className="text-sm text-muted-foreground">
+                  Mulai setup awal untuk menggunakan aplikasi
+                </p>
+              </div>
+            </div>
+            <Button asChild>
+              <Link href="/onboarding">Mulai Setup</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -42,7 +79,12 @@ export default async function DashboardPage() {
             Mulai Produksi
           </Link>
         </Button>
-        <Button asChild size="lg" variant="secondary" className="h-16 text-base">
+        <Button
+          asChild
+          size="lg"
+          variant="secondary"
+          className="h-16 text-base"
+        >
           <Link href="/warung">
             <Store className="mr-2 h-5 w-5" />
             Mulai Keliling
@@ -58,7 +100,11 @@ export default async function DashboardPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className={`text-3xl font-bold ${summary.netProfit >= 0 ? "text-green-600" : "text-red-600"}`}>
+          <div
+            className={`text-3xl font-bold ${
+              summary.netProfit >= 0 ? "text-green-600" : "text-red-600"
+            }`}
+          >
             {formatRupiah(summary.netProfit)}
           </div>
           <div className="mt-2 flex items-center gap-4 text-sm text-muted-foreground">
@@ -87,14 +133,18 @@ export default async function DashboardPage() {
               <TrendingDown className="h-4 w-4 text-muted-foreground" />
               <span className="text-xs text-muted-foreground">Biaya Op.</span>
             </div>
-            <p className="text-xl font-bold">{formatRupiah(summary.totalExpenses)}</p>
+            <p className="text-xl font-bold">
+              {formatRupiah(summary.totalExpenses)}
+            </p>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-4">
             <div className="flex items-center gap-2">
               <Store className="h-4 w-4 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">Warung Aktif</span>
+              <span className="text-xs text-muted-foreground">
+                Warung Aktif
+              </span>
             </div>
             <p className="text-xl font-bold">{summary.activeWarungs}</p>
           </CardContent>
@@ -103,9 +153,13 @@ export default async function DashboardPage() {
           <CardContent className="pt-4">
             <div className="flex items-center gap-2">
               <AlertCircle className="h-4 w-4 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">Belum Dibayar</span>
+              <span className="text-xs text-muted-foreground">
+                Belum Dibayar
+              </span>
             </div>
-            <p className="text-xl font-bold text-orange-600">{formatRupiah(summary.unpaidAmount)}</p>
+            <p className="text-xl font-bold text-orange-600">
+              {formatRupiah(summary.unpaidAmount)}
+            </p>
           </CardContent>
         </Card>
       </div>
@@ -116,7 +170,9 @@ export default async function DashboardPage() {
           <CardContent className="flex items-center justify-between pt-4">
             <div>
               <p className="text-xs text-muted-foreground">HPP Terakhir</p>
-              <p className="text-lg font-bold">{formatRupiah(summary.latestHPP)}/bks</p>
+              <p className="text-lg font-bold">
+                {formatRupiah(summary.latestHPP)}/bks
+              </p>
             </div>
             <p className="text-xs text-muted-foreground">
               Produksi: {summary.totalProduced} bks
@@ -144,11 +200,14 @@ export default async function DashboardPage() {
                   <div>
                     <p className="font-medium">{tx.warung.name}</p>
                     <p className="text-xs text-muted-foreground">
-                      {new Date(tx.date).toLocaleDateString("id-ID")} - {tx.sold} bks
+                      {new Date(tx.date).toLocaleDateString("id-ID")} -{" "}
+                      {tx.sold} bks
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold">{formatRupiah(Number(tx.totalBill))}</p>
+                    <p className="font-bold">
+                      {formatRupiah(Number(tx.totalBill))}
+                    </p>
                     <span
                       className={`text-xs ${
                         tx.paymentStatus === "lunas"
