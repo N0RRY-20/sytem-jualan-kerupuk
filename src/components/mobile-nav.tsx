@@ -3,13 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, ChefHat, Store, Wallet } from "lucide-react";
+import { Home, ChefHat, Store, Wallet, User } from "lucide-react";
 
 const navItems = [
   { href: "/dashboard", label: "Beranda", icon: Home },
   { href: "/produksi", label: "Produksi", icon: ChefHat },
   { href: "/warung", label: "Warung", icon: Store },
   { href: "/keuangan", label: "Keuangan", icon: Wallet },
+  { href: "/profil", label: "Profil", icon: User },
 ];
 
 export function MobileNav() {
@@ -31,7 +32,9 @@ export function MobileNav() {
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <item.icon className={cn("h-6 w-6", isActive && "fill-primary/20")} />
+              <item.icon
+                className={cn("h-6 w-6", isActive && "fill-primary/20")}
+              />
               <span className="font-medium">{item.label}</span>
             </Link>
           );
